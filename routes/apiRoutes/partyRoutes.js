@@ -1,14 +1,7 @@
-const db=require('./db/connection');
 const express=require('express');
-const inputCheck=require('./utils/inputCheck');
-const PORT=process.env.PORT||3001;
-const app=express();
-const apiRoutes=require('./routes/apiRoutes');
-
-app.use(express.urlencoded({extended:false}));
-app.use(express.json());
-app.use('/api',apiRoutes);
-app.get('/api/parties',(req,res)=>{
+const router=express.Router();
+const db=require('../../db/connection');
+router.get('/parties',(req,res)=>{
     const sql=`SELECT * FROM parties`;
     db.query(sql,(err,rows)=>{
         if(err){
@@ -21,7 +14,7 @@ app.get('/api/parties',(req,res)=>{
         });
     });
 });
-app.get('/api/party/:id',(req,res)=>{
+router.get('/party/:id',(req,res)=>{
     const sql=`SELECT * FROM parties WHERE id=?`;
     const params=[req.params.id];
     db.query(sql,params,(err,row)=>{
@@ -35,7 +28,7 @@ app.get('/api/party/:id',(req,res)=>{
         });
     });
 });
-app.delete('/api/party/:id',(req,res)=>{
+router.delete('/party/:id',(req,res)=>{
     const sql=`DELETE FROM parties WHERE id=?`;
     const params=[req.params.id];
     db.query(sql,params,(err,result)=>{
@@ -54,15 +47,4 @@ app.delete('/api/party/:id',(req,res)=>{
         }
     });
 });
-app.get('/',(req,res)=>{
-    res.json({
-        message: 'Hello World'
-    });
-});
-app.use((req,res)=>{
-    res.status(404).end();
-});
-
-app.listen(PORT,()=>{
-    console.log(`Server running on port ${PORT}`);
-});
+module.exports=router;
